@@ -1,0 +1,148 @@
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
+import type { Topic } from '../types'
+import { addLog, getTopic, listTopics, saveTopic } from '../lib/db'
+import {
+  applyReview,
+  dueCompare,
+  INTERVAL_DAYS,
+  isDue,
+  SCORE_LABELS
+} from '../lib/srs'
+
+export default function Review() {
+  const [params] = useSearchParams()
+  const single = params.get('topic')
+
+  const [queue, setQueue] = useState<Topic[]>([])
+  const [index, setIndex] = useState(0)
+  const [revealed, setRevealed] = useState(false)
+  const [done, setDone] = useState(0)
+  const [loaded, setLoaded] = useState(false)
+
+  useEffect(() => {
+    if (single) {
+      getTopic(single).then((t) => {
+        setQueue(t ? [t] : [])
+        setLoaded(true)
+      })
+    } else {
+      listTopics().then((ts) => {
+        setQueue(ts.filter(isDue).sort(dueCompare))
+        setLoaded(true)
+      })
+    }
+  }, [single])
+
+  if (!loaded) return null
+
+  const current = queue[index]
+
+  if (!current) {
+    return (
+      <div className="card text-center space-y-3 py-10">
+        <p className="text-2xl font-bold">
+          {done > 0 ? '복습 완료' : '복습할 토픽이 없습니다'}
+        </p>
+        <p className="text-sm text-slate-400">
+          {done > 0
+            ? `${done}개 토픽을 인출했습니다. 다음 복습일이 자동 계산되었습니다.`
+            : '새 토픽을 등록하거나 내일 다시 확인하세요.'}
+        </p>
+        <div className="flex justify-center gap-2">
+          <Link to="/" className="btn-primary">
+            대시보드로
+          </Link>
+          <Link to="/topics" className="btn-secondary">
+            토픽 목록
+          </Link>
+        </div>
+      </div>
+    )
+  }
+
+  const onScore = async (score: number) => {
+    const { topic, log } = applyReview(current, score)
+    await saveTopic(topic)
+    await addLog(log)
+    setDone((d) => d + 1)
+    setRevealed(false)
+    setIndex((i) => i + 1)
+  }
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center justify-between text-xs text-slate-400">
+        <span>
+          {index + 1} / {queue.length}
+        </span>
+        <span>완료 {done}</span>
+      </div>
+
+      <div className="card space-y-4">
+        <h1 className="text-xl font-bold text-center py-2">{current.title}</h1>
+
+        {!revealed ? (
+          <>
+            <div className="border border-dashed border-slate-700 rounded-lg py-14 text-center text-sm text-slate-500">
+              이미지와 설명이 숨겨져 있습니다.
+              <br />
+              머릿속으로 백지복기한 뒤 정답을 확인하세요.
+            </div>
+            <button
+              className="btn-primary w-full py-3 text-base"
+              onClick={() => setRevealed(true)}
+            >
+              정답 보기
+            </button>
+          </>
+        ) : (
+          <>
+            {current.imageData ? (
+              <img
+                src={current.imageData}
+                alt={current.title}
+                className="rounded-lg border border-slate-800 w-full"
+              />
+            ) : (
+              <div className="text-center text-sm text-slate-500 py-4">
+                등록된 이미지가 없습니다.
+              </div>
+            )}
+            {current.description && (
+              <p className="text-sm text-slate-300 whitespace-pre-wrap">
+                {current.description}
+              </p>
+            )}
+
+            <div>
+              <p className="text-xs text-slate-400 mb-2 text-center">
+                얼마나 인출했는지 자가 평가하세요
+              </p>
+              <div className="grid grid-cols-1 gap-2">
+                {[5, 4, 3, 2, 1].map((s) => (
+                  <button
+                    key={s}
+                    onClick={() => onScore(s)}
+                    className={`btn justify-between px-4 ${
+                      s >= 4
+                        ? 'bg-emerald-900/60 hover:bg-emerald-800 text-emerald-200'
+                        : s === 3
+                          ? 'bg-amber-900/60 hover:bg-amber-800 text-amber-200'
+                          : 'bg-rose-900/60 hover:bg-rose-800 text-rose-200'
+                    }`}
+                  >
+                    <span>
+                      {s}점 · {SCORE_LABELS[s]}
+                    </span>
+                    <span className="text-xs opacity-70">+{INTERVAL_DAYS[s]}일 후</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </>
+        )}
+      </div>
+    </div>
+  )
+}
