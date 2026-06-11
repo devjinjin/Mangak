@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
 import type { Topic } from '../types'
 import { addLog, getTopic, listTopics, saveTopic } from '../lib/db'
@@ -34,9 +34,44 @@ export default function Review() {
     }
   }, [single])
 
-  if (!loaded) return null
-
   const current = queue[index]
+
+  const onScore = useCallback(
+    async (score: number) => {
+      if (!current) return
+      const { topic, log } = applyReview(current, score)
+      await saveTopic(topic)
+      await addLog(log)
+      setDone((d) => d + 1)
+      setRevealed(false)
+      setIndex((i) => i + 1)
+    },
+    [current]
+  )
+
+  // 키보드 단축키: Space/Enter = 정답 보기, 1~5 = 자가평가
+  useEffect(() => {
+    if (!current) return
+    const onKey = (e: KeyboardEvent) => {
+      const tag = (e.target as HTMLElement)?.tagName
+      if (tag === 'INPUT' || tag === 'TEXTAREA') return
+      if (!revealed) {
+        if (e.key === ' ' || e.key === 'Enter') {
+          e.preventDefault()
+          setRevealed(true)
+        }
+        return
+      }
+      if (e.key >= '1' && e.key <= '5') {
+        e.preventDefault()
+        onScore(Number(e.key))
+      }
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [current, revealed, onScore])
+
+  if (!loaded) return null
 
   if (!current) {
     return (
@@ -61,22 +96,21 @@ export default function Review() {
     )
   }
 
-  const onScore = async (score: number) => {
-    const { topic, log } = applyReview(current, score)
-    await saveTopic(topic)
-    await addLog(log)
-    setDone((d) => d + 1)
-    setRevealed(false)
-    setIndex((i) => i + 1)
-  }
-
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between text-xs text-slate-400">
-        <span>
-          {index + 1} / {queue.length}
-        </span>
-        <span>완료 {done}</span>
+      <div>
+        <div className="flex items-center justify-between text-xs text-slate-400 mb-1.5">
+          <span>
+            {index + 1} / {queue.length}
+          </span>
+          <span>완료 {done}</span>
+        </div>
+        <div className="h-1.5 rounded-full bg-slate-800 overflow-hidden">
+          <div
+            className="h-full bg-sky-500 transition-all duration-300"
+            style={{ width: `${(index / queue.length) * 100}%` }}
+          />
+        </div>
       </div>
 
       <div className="card space-y-4">
@@ -94,6 +128,9 @@ export default function Review() {
               onClick={() => setRevealed(true)}
             >
               정답 보기
+              <kbd className="ml-2 hidden sm:inline rounded bg-sky-700/60 px-1.5 py-0.5 text-[11px] font-normal">
+                Space
+              </kbd>
             </button>
           </>
         ) : (
@@ -137,7 +174,10 @@ export default function Review() {
                           : 'bg-rose-900/60 hover:bg-rose-800 text-rose-200'
                     }`}
                   >
-                    <span>
+                    <span className="flex items-center gap-2">
+                      <kbd className="hidden sm:inline rounded bg-black/25 px-1.5 py-0.5 text-[11px] font-normal">
+                        {s}
+                      </kbd>
                       {s}점 · {SCORE_LABELS[s]}
                     </span>
                     <span className="text-xs opacity-70">+{INTERVAL_DAYS[s]}일 후</span>

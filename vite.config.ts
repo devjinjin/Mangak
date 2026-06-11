@@ -10,8 +10,8 @@ export default defineConfig({
       injectRegister: 'auto',
       includeAssets: ['icon.svg'],
       manifest: {
-        name: 'TechMaster Recall',
-        short_name: 'Recall',
+        name: 'Mangak',
+        short_name: 'Mangak',
         description: '기술사 이미지 기반 인출학습 · 망각곡선 복습 시스템',
         lang: 'ko',
         theme_color: '#0f172a',

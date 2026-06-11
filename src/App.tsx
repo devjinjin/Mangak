@@ -22,7 +22,7 @@ export default function App() {
       <div className="min-h-screen max-w-3xl mx-auto px-4 pb-24">
         <header className="py-4 flex items-center justify-between">
           <Link to="/" className="text-lg font-bold tracking-tight">
-            TechMaster <span className="text-sky-400">Recall</span>
+            Mang<span className="text-sky-400">ak</span>
           </Link>
           <Link to="/topics/new" className="btn-primary text-xs">
             + 새 토픽
@@ -43,7 +43,7 @@ export default function App() {
           </Routes>
         </main>
 
-        <nav className="fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur border-t border-slate-800">
+        <nav className="fixed bottom-0 inset-x-0 bg-slate-900/95 backdrop-blur border-t border-slate-800 pb-[env(safe-area-inset-bottom)]">
           <div className="max-w-3xl mx-auto grid grid-cols-5">
             {NAV.map((n) => (
               <NavLink

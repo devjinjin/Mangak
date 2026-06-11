@@ -1,5 +1,8 @@
-import type { Category, Topic, ReviewLog, ExportData } from '../types'
+import type { Category, Topic, ReviewLog, ExportData, ReviewState } from '../types'
+import { newReviewState } from './srs'
 
+// 브랜드명은 Mangak이지만 DB 이름은 변경하지 않는다.
+// 변경 시 기존 사용자의 IndexedDB 데이터가 통째로 분리되어 유실되기 때문.
 const DB_NAME = 'techmaster-recall'
 const DB_VERSION = 1
 const STORES = ['categories', 'topics', 'reviewLogs'] as const
@@ -72,11 +75,29 @@ export async function deleteCategory(id: string): Promise<void> {
 
 // ---------- Topic ----------
 
-/** v1 단일 imageData → images[] 마이그레이션 (읽기 시점 정규화) */
+/** 누락·손상된 review 상태를 기본값으로 보정 */
+function normalizeReview(r: Partial<ReviewState> | null | undefined): ReviewState {
+  const base = newReviewState()
+  if (!r || typeof r !== 'object') return base
+  return {
+    lastReviewedAt: typeof r.lastReviewedAt === 'string' ? r.lastReviewedAt : null,
+    nextReviewAt: typeof r.nextReviewAt === 'string' ? r.nextReviewAt : base.nextReviewAt,
+    score: typeof r.score === 'number' ? r.score : null,
+    reviewCount: typeof r.reviewCount === 'number' ? r.reviewCount : 0,
+    failCount: typeof r.failCount === 'number' ? r.failCount : 0
+  }
+}
+
+/**
+ * 토픽을 앱이 가정하는 형태로 정규화한다.
+ * - v1 단일 imageData → images[] 마이그레이션
+ * - review/images 등 필수 필드 누락·손상 보정 (외부·구버전 Import 방어)
+ */
 function normalizeTopic(t: Topic): Topic {
   if (!Array.isArray(t.images)) {
     t.images = t.imageData ? [t.imageData] : []
   }
+  t.review = normalizeReview(t.review)
   return t
 }
 
@@ -131,7 +152,7 @@ export async function exportData(): Promise<ExportData> {
     listLogs()
   ])
   return {
-    app: 'techmaster-recall',
+    app: 'mangak',
     version: 1,
     exportedAt: new Date().toISOString(),
     categories,
@@ -140,21 +161,55 @@ export async function exportData(): Promise<ExportData> {
   }
 }
 
+export interface ImportResult {
+  categories: number
+  topics: number
+  reviewLogs: number
+  /** 필수 필드(id·title) 누락으로 건너뛴 토픽 수 */
+  skippedTopics: number
+}
+
+/** id·title을 갖춘 객체만 토픽으로 인정 */
+function isImportableTopic(t: unknown): t is Topic {
+  return (
+    !!t &&
+    typeof t === 'object' &&
+    typeof (t as Topic).id === 'string' &&
+    typeof (t as Topic).title === 'string'
+  )
+}
+
 export async function importData(
   data: ExportData,
   mode: 'overwrite' | 'merge'
-): Promise<{ categories: number; topics: number; reviewLogs: number }> {
-  if (!data || !Array.isArray(data.topics)) {
+): Promise<ImportResult> {
+  if (!data || typeof data !== 'object' || !Array.isArray(data.topics)) {
     throw new Error('올바른 내보내기 파일이 아닙니다.')
   }
   if (mode === 'overwrite') await clearAll()
-  for (const c of data.categories ?? []) await saveCategory(c)
-  for (const t of data.topics ?? []) await saveTopic(t)
-  for (const l of data.reviewLogs ?? []) await addLog(l)
+
+  const categories = Array.isArray(data.categories) ? data.categories : []
+  const reviewLogs = Array.isArray(data.reviewLogs) ? data.reviewLogs : []
+
+  let skippedTopics = 0
+  let savedTopics = 0
+  for (const raw of data.topics) {
+    if (!isImportableTopic(raw)) {
+      skippedTopics++
+      continue
+    }
+    // 읽기 시점뿐 아니라 저장 시점에도 정규화해 손상 데이터의 DB 유입을 차단
+    await saveTopic(normalizeTopic(raw))
+    savedTopics++
+  }
+  for (const c of categories) await saveCategory(c)
+  for (const l of reviewLogs) await addLog(l)
+
   return {
-    categories: (data.categories ?? []).length,
-    topics: (data.topics ?? []).length,
-    reviewLogs: (data.reviewLogs ?? []).length
+    categories: categories.length,
+    topics: savedTopics,
+    reviewLogs: reviewLogs.length,
+    skippedTopics
   }
 }
 

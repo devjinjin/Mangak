@@ -19,7 +19,7 @@ export default function Settings() {
       const a = document.createElement('a')
       const stamp = new Date().toISOString().slice(0, 10)
       a.href = url
-      a.download = `techmaster-recall-${stamp}.json`
+      a.download = `mangak-${stamp}.json`
       a.click()
       URL.revokeObjectURL(url)
     } finally {
@@ -40,8 +40,10 @@ export default function Settings() {
         return
       }
       const r = await importData(data, mode)
+      const skipped =
+        r.skippedTopics > 0 ? `\n건너뛴 토픽 ${r.skippedTopics}개 (형식 오류)` : ''
       window.alert(
-        `가져오기 완료\n카테고리 ${r.categories} · 토픽 ${r.topics} · 복습이력 ${r.reviewLogs}`
+        `가져오기 완료\n카테고리 ${r.categories} · 토픽 ${r.topics} · 복습이력 ${r.reviewLogs}${skipped}`
       )
       location.reload()
     } catch (e) {
@@ -130,7 +132,7 @@ export default function Settings() {
       </section>
 
       <p className="text-center text-xs text-slate-600">
-        TechMaster Recall · 모든 데이터는 이 기기의 IndexedDB에만 저장됩니다.
+        Mangak · 모든 데이터는 이 기기의 IndexedDB에만 저장됩니다.
       </p>
     </div>
   )

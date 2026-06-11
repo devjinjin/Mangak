@@ -1,4 +1,4 @@
-# TechMaster Recall
+# Mangak
 
 기술사(정보관리 · 컴퓨터시스템응용) 전용 **이미지 기반 인출학습 + 망각곡선 복습** PWA.
 
@@ -21,18 +21,18 @@ npm run preview  # 빌드 결과 미리보기 (PWA 동작 확인용)
 
 최초 1회 설정:
 
-1. GitHub에서 새 저장소 생성 (예: `techmaster-recall`)
+1. GitHub에서 새 저장소 생성 (예: `mangak`)
 2. 로컬에서 push:
    ```bash
    git init
    git add .
-   git commit -m "feat: TechMaster Recall MVP"
+   git commit -m "feat: Mangak MVP"
    git branch -M main
-   git remote add origin https://github.com/<계정명>/techmaster-recall.git
+   git remote add origin https://github.com/<계정명>/mangak.git
    git push -u origin main
    ```
 3. 저장소 **Settings → Pages → Build and deployment → Source**를 **GitHub Actions**로 변경
-4. Actions 탭에서 배포 완료 후 `https://<계정명>.github.io/techmaster-recall/` 접속
+4. Actions 탭에서 배포 완료 후 `https://<계정명>.github.io/mangak/` 접속
 
 HashRouter 기반이라 서브 경로(`/<repo>/`)에서도 라우팅이 그대로 동작합니다.
 
