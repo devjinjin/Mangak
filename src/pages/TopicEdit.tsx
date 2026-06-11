@@ -49,7 +49,7 @@ export default function TopicEdit() {
   const [description, setDescription] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [tagsText, setTagsText] = useState('')
-  const [imageData, setImageData] = useState<string | null>(null)
+  const [images, setImages] = useState<string[]>([])
   const [saving, setSaving] = useState(false)
 
   useEffect(() => {
@@ -62,7 +62,7 @@ export default function TopicEdit() {
         setDescription(t.description)
         setCategoryId(t.categoryId ?? '')
         setTagsText(t.tags.join(', '))
-        setImageData(t.imageData)
+        setImages(t.images)
       })
     }
   }, [id])
@@ -89,13 +89,34 @@ export default function TopicEdit() {
     setCategoryId(cat.id)
   }
 
-  const onFile = async (file: File | undefined) => {
-    if (!file) return
+  const onFiles = async (files: FileList | null) => {
+    if (!files || files.length === 0) return
     try {
-      setImageData(await readImage(file))
+      const added: string[] = []
+      for (const f of Array.from(files)) {
+        added.push(await readImage(f))
+      }
+      setImages((prev) => [...prev, ...added])
     } catch {
       window.alert('이미지를 불러오지 못했습니다.')
     }
+    if (fileRef.current) fileRef.current.value = ''
+  }
+
+  const removeImage = (i: number) => {
+    setImages((prev) => prev.filter((_, idx) => idx !== i))
+  }
+
+  const moveImage = (i: number, dir: -1 | 1) => {
+    setImages((prev) => {
+      const j = i + dir
+      if (j < 0 || j >= prev.length) return prev
+      const next = [...prev]
+      const tmp = next[i]
+      next[i] = next[j]
+      next[j] = tmp
+      return next
+    })
   }
 
   const onSave = async () => {
@@ -116,7 +137,8 @@ export default function TopicEdit() {
           description: description.trim(),
           categoryId: categoryId || null,
           tags,
-          imageData,
+          images,
+          imageData: null,
           updatedAt: now
         }
       : {
@@ -125,7 +147,7 @@ export default function TopicEdit() {
           description: description.trim(),
           categoryId: categoryId || null,
           tags,
-          imageData,
+          images,
           createdAt: now,
           updatedAt: now,
           review: newReviewState()
@@ -195,44 +217,62 @@ export default function TopicEdit() {
         </div>
 
         <div>
-          <label className="label">정리 이미지 (도식 · 마인드맵 · A4 요약)</label>
+          <label className="label">
+            정리 이미지 (도식 · 마인드맵 · A4 요약) — 여러 장 등록 가능
+          </label>
           <input
             ref={fileRef}
             type="file"
             accept="image/*"
+            multiple
             className="hidden"
-            onChange={(e) => onFile(e.target.files?.[0])}
+            onChange={(e) => onFiles(e.target.files)}
           />
-          {imageData ? (
-            <div className="space-y-2">
-              <img
-                src={imageData}
-                alt="미리보기"
-                className="rounded-lg border border-slate-800 w-full"
-              />
-              <div className="flex gap-2">
-                <button
-                  className="btn-secondary text-xs"
-                  onClick={() => fileRef.current?.click()}
+          {images.length > 0 && (
+            <ul className="space-y-2 mb-2">
+              {images.map((img, i) => (
+                <li
+                  key={`${i}-${img.slice(-24)}`}
+                  className="relative rounded-lg border border-slate-800 overflow-hidden"
                 >
-                  이미지 변경
-                </button>
-                <button
-                  className="btn-danger text-xs"
-                  onClick={() => setImageData(null)}
-                >
-                  이미지 제거
-                </button>
-              </div>
-            </div>
-          ) : (
-            <button
-              className="w-full border border-dashed border-slate-700 rounded-lg py-8 text-sm text-slate-400 hover:border-sky-600 hover:text-sky-400"
-              onClick={() => fileRef.current?.click()}
-            >
-              이미지 선택
-            </button>
+                  <img src={img} alt={`이미지 ${i + 1}`} className="w-full" />
+                  <span className="absolute top-2 left-2 badge bg-slate-950/80 text-slate-300">
+                    {i + 1} / {images.length}
+                  </span>
+                  <div className="absolute top-2 right-2 flex gap-1">
+                    <button
+                      className="btn-secondary px-2.5 py-1 text-xs"
+                      onClick={() => moveImage(i, -1)}
+                      disabled={i === 0}
+                      aria-label="위로 이동"
+                    >
+                      ↑
+                    </button>
+                    <button
+                      className="btn-secondary px-2.5 py-1 text-xs"
+                      onClick={() => moveImage(i, 1)}
+                      disabled={i === images.length - 1}
+                      aria-label="아래로 이동"
+                    >
+                      ↓
+                    </button>
+                    <button
+                      className="btn-danger px-2.5 py-1 text-xs"
+                      onClick={() => removeImage(i)}
+                    >
+                      삭제
+                    </button>
+                  </div>
+                </li>
+              ))}
+            </ul>
           )}
+          <button
+            className="w-full border border-dashed border-slate-700 rounded-lg py-6 text-sm text-slate-400 hover:border-sky-600 hover:text-sky-400"
+            onClick={() => fileRef.current?.click()}
+          >
+            + 이미지 추가 (여러 장 선택 가능)
+          </button>
         </div>
       </div>
 

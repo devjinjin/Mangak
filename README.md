@@ -55,7 +55,7 @@ src/
     Dashboard.tsx     # 오늘·지연 복습 수, 전체 토픽, 평균 점수, 최근 학습
     TopicList.tsx     # 검색 + 카테고리/태그 필터
     TopicDetail.tsx   # 이미지·설명·복습 상태·이력, 삭제(이력 삭제 여부 확인)
-    TopicEdit.tsx     # 생성/수정, 이미지 업로드(1600px 리사이즈 후 Base64 저장)
+    TopicEdit.tsx     # 생성/수정, 다중 이미지 업로드(개별 삭제·순서 변경, 1600px 리사이즈)
     Review.tsx        # 인출학습: 제목만 표시 → 백지복기 → 정답 → 자가평가
     Statistics.tsx    # 7일 학습량, 카테고리별 숙련도, 취약 토픽
     Settings.tsx      # Export / Import / 데이터 초기화

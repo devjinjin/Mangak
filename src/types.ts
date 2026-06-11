@@ -20,7 +20,10 @@ export interface Topic {
   description: string
   categoryId: string | null
   tags: string[]
-  imageData: string | null
+  /** 정리 이미지 목록 (Base64 Data URL, 순서 보존) */
+  images: string[]
+  /** @deprecated v1 단일 이미지 필드 — 기존 데이터/Import 호환용 */
+  imageData?: string | null
   createdAt: string
   updatedAt: string
   review: ReviewState

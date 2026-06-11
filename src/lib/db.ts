@@ -72,12 +72,24 @@ export async function deleteCategory(id: string): Promise<void> {
 
 // ---------- Topic ----------
 
+/** v1 단일 imageData → images[] 마이그레이션 (읽기 시점 정규화) */
+function normalizeTopic(t: Topic): Topic {
+  if (!Array.isArray(t.images)) {
+    t.images = t.imageData ? [t.imageData] : []
+  }
+  return t
+}
+
 export function listTopics(): Promise<Topic[]> {
-  return tx<Topic[]>('topics', 'readonly', (s) => s.getAll())
+  return tx<Topic[]>('topics', 'readonly', (s) => s.getAll()).then((ts) =>
+    ts.map(normalizeTopic)
+  )
 }
 
 export function getTopic(id: string): Promise<Topic | undefined> {
-  return tx<Topic | undefined>('topics', 'readonly', (s) => s.get(id))
+  return tx<Topic | undefined>('topics', 'readonly', (s) => s.get(id)).then((t) =>
+    t ? normalizeTopic(t) : t
+  )
 }
 
 export function saveTopic(t: Topic): Promise<unknown> {

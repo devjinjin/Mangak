@@ -104,10 +104,11 @@ export default function Settings() {
             덮어쓰기
           </label>
         </div>
+        {/* accept를 지정하면 일부 모바일 브라우저가 사진 선택기를 띄우는 문제가 있어
+            파일 형식 제한 없이 받고, 내용(JSON 파싱 + 구조 검증)으로 검사한다 */}
         <input
           ref={fileRef}
           type="file"
-          accept="application/json,.json"
           className="hidden"
           onChange={(e) => onImportFile(e.target.files?.[0])}
         />

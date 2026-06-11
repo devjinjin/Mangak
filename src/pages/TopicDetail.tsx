@@ -65,12 +65,17 @@ export default function TopicDetail() {
           <span className={`badge shrink-0 ${badge.cls}`}>{badge.text}</span>
         </div>
 
-        {topic.imageData && (
-          <img
-            src={topic.imageData}
-            alt={topic.title}
-            className="mt-3 rounded-lg border border-slate-800 w-full"
-          />
+        {topic.images.length > 0 && (
+          <div className="mt-3 space-y-2">
+            {topic.images.map((img, i) => (
+              <img
+                key={i}
+                src={img}
+                alt={`${topic.title} ${i + 1}`}
+                className="rounded-lg border border-slate-800 w-full"
+              />
+            ))}
+          </div>
         )}
 
         {topic.description && (

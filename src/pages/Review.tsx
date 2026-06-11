@@ -98,12 +98,17 @@ export default function Review() {
           </>
         ) : (
           <>
-            {current.imageData ? (
-              <img
-                src={current.imageData}
-                alt={current.title}
-                className="rounded-lg border border-slate-800 w-full"
-              />
+            {current.images.length > 0 ? (
+              <div className="space-y-2">
+                {current.images.map((img, i) => (
+                  <img
+                    key={i}
+                    src={img}
+                    alt={`${current.title} ${i + 1}`}
+                    className="rounded-lg border border-slate-800 w-full"
+                  />
+                ))}
+              </div>
             ) : (
               <div className="text-center text-sm text-slate-500 py-4">
                 등록된 이미지가 없습니다.
