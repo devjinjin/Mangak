@@ -119,7 +119,7 @@ export default function Review() {
         {!revealed ? (
           <>
             <div className="border border-dashed border-slate-700 rounded-lg py-14 text-center text-sm text-slate-500">
-              이미지와 설명이 숨겨져 있습니다.
+              설명, 암기설명, 이미지가 숨겨져 있습니다.
               <br />
               머릿속으로 백지복기한 뒤 정답을 확인하세요.
             </div>
@@ -135,26 +135,40 @@ export default function Review() {
           </>
         ) : (
           <>
+            {current.description && (
+              <section>
+                <h2 className="text-xs font-semibold text-slate-500 mb-1">설명</h2>
+                <p className="text-sm text-slate-300 whitespace-pre-wrap">
+                  {current.description}
+                </p>
+              </section>
+            )}
+            {current.memorizationDescription && (
+              <section>
+                <h2 className="text-xs font-semibold text-slate-500 mb-1">암기설명</h2>
+                <p className="text-sm text-slate-300 whitespace-pre-wrap">
+                  {current.memorizationDescription}
+                </p>
+              </section>
+            )}
             {current.images.length > 0 ? (
-              <div className="space-y-2">
-                {current.images.map((img, i) => (
-                  <img
-                    key={i}
-                    src={img}
-                    alt={`${current.title} ${i + 1}`}
-                    className="rounded-lg border border-slate-800 w-full"
-                  />
-                ))}
-              </div>
+              <section>
+                <h2 className="text-xs font-semibold text-slate-500 mb-2">이미지</h2>
+                <div className="space-y-2">
+                  {current.images.map((img, i) => (
+                    <img
+                      key={i}
+                      src={img}
+                      alt={`${current.title} ${i + 1}`}
+                      className="rounded-lg border border-slate-800 w-full"
+                    />
+                  ))}
+                </div>
+              </section>
             ) : (
               <div className="text-center text-sm text-slate-500 py-4">
                 등록된 이미지가 없습니다.
               </div>
-            )}
-            {current.description && (
-              <p className="text-sm text-slate-300 whitespace-pre-wrap">
-                {current.description}
-              </p>
             )}
 
             <div>

@@ -65,23 +65,38 @@ export default function TopicDetail() {
           <span className={`badge shrink-0 ${badge.cls}`}>{badge.text}</span>
         </div>
 
-        {topic.images.length > 0 && (
-          <div className="mt-3 space-y-2">
-            {topic.images.map((img, i) => (
-              <img
-                key={i}
-                src={img}
-                alt={`${topic.title} ${i + 1}`}
-                className="rounded-lg border border-slate-800 w-full"
-              />
-            ))}
-          </div>
+        {topic.description && (
+          <section className="mt-4">
+            <h2 className="text-xs font-semibold text-slate-500 mb-1">설명</h2>
+            <p className="text-sm text-slate-300 whitespace-pre-wrap">
+              {topic.description}
+            </p>
+          </section>
         )}
 
-        {topic.description && (
-          <p className="mt-3 text-sm text-slate-300 whitespace-pre-wrap">
-            {topic.description}
-          </p>
+        {topic.memorizationDescription && (
+          <section className="mt-4">
+            <h2 className="text-xs font-semibold text-slate-500 mb-1">암기설명</h2>
+            <p className="text-sm text-slate-300 whitespace-pre-wrap">
+              {topic.memorizationDescription}
+            </p>
+          </section>
+        )}
+
+        {topic.images.length > 0 && (
+          <section className="mt-4">
+            <h2 className="text-xs font-semibold text-slate-500 mb-2">이미지</h2>
+            <div className="space-y-2">
+              {topic.images.map((img, i) => (
+                <img
+                  key={i}
+                  src={img}
+                  alt={`${topic.title} ${i + 1}`}
+                  className="rounded-lg border border-slate-800 w-full"
+                />
+              ))}
+            </div>
+          </section>
         )}
       </div>
 

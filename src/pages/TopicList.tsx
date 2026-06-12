@@ -33,6 +33,7 @@ export default function TopicList() {
         return (
           t.title.toLowerCase().includes(kw) ||
           t.description.toLowerCase().includes(kw) ||
+          t.memorizationDescription.toLowerCase().includes(kw) ||
           catName.toLowerCase().includes(kw) ||
           t.tags.some((tag) => tag.toLowerCase().includes(kw))
         )

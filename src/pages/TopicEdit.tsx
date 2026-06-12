@@ -47,6 +47,7 @@ export default function TopicEdit() {
   const [original, setOriginal] = useState<Topic | null>(null)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
+  const [memorizationDescription, setMemorizationDescription] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [tagsText, setTagsText] = useState('')
   const [images, setImages] = useState<string[]>([])
@@ -60,6 +61,7 @@ export default function TopicEdit() {
         setOriginal(t)
         setTitle(t.title)
         setDescription(t.description)
+        setMemorizationDescription(t.memorizationDescription)
         setCategoryId(t.categoryId ?? '')
         setTagsText(t.tags.join(', '))
         setImages(t.images)
@@ -135,6 +137,7 @@ export default function TopicEdit() {
           ...original,
           title: title.trim(),
           description: description.trim(),
+          memorizationDescription: memorizationDescription.trim(),
           categoryId: categoryId || null,
           tags,
           images,
@@ -145,6 +148,7 @@ export default function TopicEdit() {
           id: crypto.randomUUID(),
           title: title.trim(),
           description: description.trim(),
+          memorizationDescription: memorizationDescription.trim(),
           categoryId: categoryId || null,
           tags,
           images,
@@ -178,6 +182,16 @@ export default function TopicEdit() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="핵심 키워드, 암기 포인트 등"
+          />
+        </div>
+
+        <div>
+          <label className="label">암기설명 (정답 확인 시 함께 표시)</label>
+          <textarea
+            className="input min-h-28"
+            value={memorizationDescription}
+            onChange={(e) => setMemorizationDescription(e.target.value)}
+            placeholder="두문자, 연상법, 암기 문장 등"
           />
         </div>
 

@@ -4,7 +4,7 @@ import { newReviewState } from './srs'
 // 브랜드명은 Mangak이지만 DB 이름은 변경하지 않는다.
 // 변경 시 기존 사용자의 IndexedDB 데이터가 통째로 분리되어 유실되기 때문.
 const DB_NAME = 'techmaster-recall'
-const DB_VERSION = 1
+const DB_VERSION = 2
 const STORES = ['categories', 'topics', 'reviewLogs'] as const
 type StoreName = (typeof STORES)[number]
 
@@ -14,18 +14,33 @@ function openDB(): Promise<IDBDatabase> {
   if (dbPromise) return dbPromise
   dbPromise = new Promise((resolve, reject) => {
     const req = indexedDB.open(DB_NAME, DB_VERSION)
-    req.onupgradeneeded = () => {
+    req.onupgradeneeded = (event) => {
       const db = req.result
       if (!db.objectStoreNames.contains('categories')) {
         db.createObjectStore('categories', { keyPath: 'id' })
       }
+      let topicsStore: IDBObjectStore
       if (!db.objectStoreNames.contains('topics')) {
-        const s = db.createObjectStore('topics', { keyPath: 'id' })
-        s.createIndex('categoryId', 'categoryId')
+        topicsStore = db.createObjectStore('topics', { keyPath: 'id' })
+        topicsStore.createIndex('categoryId', 'categoryId')
+      } else {
+        topicsStore = req.transaction!.objectStore('topics')
       }
       if (!db.objectStoreNames.contains('reviewLogs')) {
         const s = db.createObjectStore('reviewLogs', { keyPath: 'id' })
         s.createIndex('topicId', 'topicId')
+      }
+      if (event.oldVersion < 2) {
+        const cursorRequest = topicsStore.openCursor()
+        cursorRequest.onsuccess = () => {
+          const cursor = cursorRequest.result
+          if (!cursor) return
+          const topic = cursor.value as Partial<Topic>
+          if (typeof topic.memorizationDescription !== 'string') {
+            cursor.update({ ...topic, memorizationDescription: '' })
+          }
+          cursor.continue()
+        }
       }
     }
     req.onsuccess = () => resolve(req.result)
@@ -91,14 +106,19 @@ function normalizeReview(r: Partial<ReviewState> | null | undefined): ReviewStat
 /**
  * 토픽을 앱이 가정하는 형태로 정규화한다.
  * - v1 단일 imageData → images[] 마이그레이션
+ * - v2 암기설명 필드가 없는 기존 데이터 → 빈 문자열
  * - review/images 등 필수 필드 누락·손상 보정 (외부·구버전 Import 방어)
  */
 function normalizeTopic(t: Topic): Topic {
-  if (!Array.isArray(t.images)) {
-    t.images = t.imageData ? [t.imageData] : []
+  return {
+    ...t,
+    description: typeof t.description === 'string' ? t.description : '',
+    memorizationDescription:
+      typeof t.memorizationDescription === 'string' ? t.memorizationDescription : '',
+    tags: Array.isArray(t.tags) ? t.tags : [],
+    images: Array.isArray(t.images) ? t.images : t.imageData ? [t.imageData] : [],
+    review: normalizeReview(t.review)
   }
-  t.review = normalizeReview(t.review)
-  return t
 }
 
 export function listTopics(): Promise<Topic[]> {
@@ -114,7 +134,7 @@ export function getTopic(id: string): Promise<Topic | undefined> {
 }
 
 export function saveTopic(t: Topic): Promise<unknown> {
-  return tx('topics', 'readwrite', (s) => s.put(t))
+  return tx('topics', 'readwrite', (s) => s.put(normalizeTopic(t)))
 }
 
 /** 토픽 삭제. deleteLogs=true면 관련 ReviewLog도 삭제 */
@@ -153,7 +173,7 @@ export async function exportData(): Promise<ExportData> {
   ])
   return {
     app: 'mangak',
-    version: 1,
+    version: 2,
     exportedAt: new Date().toISOString(),
     categories,
     topics,

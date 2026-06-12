@@ -18,6 +18,7 @@ export interface Topic {
   id: string
   title: string
   description: string
+  memorizationDescription: string
   categoryId: string | null
   tags: string[]
   /** 정리 이미지 목록 (Base64 Data URL, 순서 보존) */
