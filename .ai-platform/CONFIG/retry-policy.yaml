@@ -1,0 +1,4 @@
+# 1시간 단위 재시도 정책 (계획서 7.4 / 16.3)
+retry_policy: interval
+interval_minutes: 60
+max_retry: configurable

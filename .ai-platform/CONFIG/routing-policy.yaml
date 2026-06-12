@@ -1,0 +1,9 @@
+# 실행 우선순위 (계획서 7.1)
+priority:
+  - claude-code
+  - codex-cli
+  - antigravity-cli
+  - hermes-agent
+  - api-agent
+# 모두 불가하면 Queue 저장 후 재시도 (계획서 7.4)
+queue_fallback: true

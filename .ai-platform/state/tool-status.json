@@ -1,0 +1,52 @@
+{
+  "checkedAt": "2026-06-11T05:51:53.593Z",
+  "results": [
+    {
+      "name": "Node.js",
+      "available": true,
+      "version": "v20.20.2",
+      "required": true
+    },
+    {
+      "name": "Git",
+      "available": true,
+      "version": "git version 2.53.0.windows.2",
+      "required": true
+    },
+    {
+      "name": "Claude Code CLI",
+      "available": true,
+      "version": "2.1.173 (Claude Code)",
+      "required": false
+    },
+    {
+      "name": "Codex CLI",
+      "available": true,
+      "version": "codex-cli 0.139.0",
+      "required": false
+    },
+    {
+      "name": "Hermes Agent CLI",
+      "available": false,
+      "detail": "hermes 미설치 (command not found)",
+      "required": false
+    },
+    {
+      "name": "API Key (ANTHROPIC_API_KEY)",
+      "available": false,
+      "detail": "Key 없음 - CLI Runner 우선 사용",
+      "required": false
+    },
+    {
+      "name": "하네스 문서 (mandatory-context/harness-docs)",
+      "available": true,
+      "required": false
+    },
+    {
+      "name": "품질 기준 (DoR/DoD)",
+      "available": true,
+      "required": false
+    }
+  ],
+  "allRequiredAvailable": true
+}

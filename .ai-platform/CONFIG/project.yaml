@@ -1,0 +1,3 @@
+name: Mangak
+operation_mode: safe   # safe | balanced | auto (계획서 25.5, 회사 기본 Safe Mode)
+quality_policy: Quality First, Token Optimized

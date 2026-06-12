@@ -1,0 +1,33 @@
+# Runner 실행 설정 (계획서 22: 설정은 파일로 관리)
+runners:
+  claude-code:
+    command: claude
+    # headless(-p) 모드는 기본적으로 파일 쓰기를 거부한다 → 작업 폴더 내 편집/도구는 허용,
+    # push 등은 approval-policy.yaml과 동일하게 차단 (계획서: SAFE 모드 가드레일)
+    args: ["-p", "{prompt}", "--permission-mode", "acceptEdits", "--allowedTools", "Edit", "Write", "Read", "Glob", "Grep", "Bash", "--disallowedTools", "Bash(git push:*)"]
+    availabilityArgs: ["--version"]
+    timeoutMinutes: 30
+  codex-cli:
+    command: codex
+    # 기본 샌드박스는 읽기 전용 → 작업 폴더 쓰기 허용
+    args: ["exec", "--sandbox", "workspace-write", "{prompt}"]
+    availabilityArgs: ["--version"]
+    timeoutMinutes: 30
+  antigravity-cli:
+    command: antigravity
+    # 구글 Antigravity(Gemini 기반 agentic CLI). 설치 환경에 맞게 조정하세요.
+    args: ["-p", "{prompt}"]
+    availabilityArgs: ["--version"]
+    timeoutMinutes: 30
+  hermes-agent:
+    command: hermes
+    args: ["chat", "-Q", "-t", "terminal,file,search,skills", "--source", "klcube", "-q", "{prompt}"]
+    availabilityArgs: ["--version"]
+    timeoutMinutes: 30
+  api-agent:
+    provider: anthropic
+    baseUrl: https://api.anthropic.com
+    model: claude-sonnet-4-6
+    envKey: ANTHROPIC_API_KEY
+    maxTokens: 8192
+    timeoutMinutes: 10

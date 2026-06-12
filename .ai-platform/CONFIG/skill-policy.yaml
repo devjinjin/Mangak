@@ -1,0 +1,7 @@
+# 내부 전용 스킬 소스 정책
+# 외부 공개/임의 public 스킬 설치를 막고, 승인된 내부 저장소/로컬 경로만 허용한다.
+allowed_sources:
+  - github.com/devjinjin/
+  - /Volumes/Backup/Projects/AI-SKILL/
+deny_public_unknown_sources: true
+require_approval_for_external_sources: true

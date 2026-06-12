@@ -1,0 +1,8 @@
+# VCS 정책 (계획서 14.2)
+auto_commit: false        # Safe Mode 기본값
+auto_push: false          # 자동 Push는 사용자 승인 필요
+protected_branches: [main, master, production]
+push_allowed_prefixes: ["feature/", "fix/"]
+checkpoint:
+  changed_files_threshold: 5
+  diff_lines_threshold: 300

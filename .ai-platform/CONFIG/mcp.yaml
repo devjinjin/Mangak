@@ -1,0 +1,9 @@
+# MCP 등록 (계획서 13)
+# 위험도: low(읽기전용, 자동) / medium(설정 활성화 시) / high(사용자 승인) / critical(매 실행 승인)
+mcps: []
+# 예시:
+#  - id: github
+#    name: GitHub MCP
+#    risk: medium
+#    enabled: false
+#    required_env: [GITHUB_TOKEN]

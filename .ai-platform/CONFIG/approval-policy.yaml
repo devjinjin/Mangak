@@ -1,0 +1,9 @@
+# 승인 정책 (계획서 25.1)
+require_approval:
+  - auto_push
+  - protected_branch_work
+  - critical_mcp
+  - api_cost_exceeded
+  - deployment_file_change
+  - db_migration
+  - bulk_delete
