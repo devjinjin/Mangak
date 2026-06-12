@@ -135,19 +135,19 @@ export default function Review() {
           </>
         ) : (
           <>
-            {current.description && (
-              <section>
-                <h2 className="text-xs font-semibold text-slate-500 mb-1">설명</h2>
-                <p className="text-sm text-slate-300 whitespace-pre-wrap">
-                  {current.description}
+            {current.memorizationDescription && (
+              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
+                <h2 className="text-sm font-bold text-sky-400 mb-2">암기설명</h2>
+                <p className="text-lg font-semibold leading-relaxed text-sky-100 whitespace-pre-wrap">
+                  {current.memorizationDescription}
                 </p>
               </section>
             )}
-            {current.memorizationDescription && (
-              <section>
-                <h2 className="text-xs font-semibold text-slate-500 mb-1">암기설명</h2>
-                <p className="text-sm text-slate-300 whitespace-pre-wrap">
-                  {current.memorizationDescription}
+            {current.description && (
+              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
+                <h2 className="text-sm font-bold text-sky-400 mb-2">설명</h2>
+                <p className="text-base text-slate-300 whitespace-pre-wrap">
+                  {current.description}
                 </p>
               </section>
             )}
