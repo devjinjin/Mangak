@@ -114,7 +114,16 @@ export default function Review() {
       </div>
 
       <div className="card space-y-4">
-        <h1 className="text-xl font-bold text-center py-2">{current.title}</h1>
+        <div className="flex items-center justify-between gap-2 py-2">
+          <span className="w-12" />
+          <h1 className="flex-1 text-xl font-bold text-center">{current.title}</h1>
+          <Link
+            to={`/topics/${current.id}/edit`}
+            className="btn-secondary shrink-0 text-xs"
+          >
+            수정
+          </Link>
+        </div>
 
         {!revealed ? (
           <>
