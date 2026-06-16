@@ -180,22 +180,22 @@ export default function TopicEdit() {
         </div>
 
         <div>
-          <label className="label">설명 (정답 확인 시 함께 표시)</label>
-          <textarea
-            className="input min-h-28"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            placeholder="핵심 키워드, 암기 포인트 등"
-          />
-        </div>
-
-        <div>
           <label className="label">두음 (정답 확인 시 함께 표시)</label>
           <textarea
             className="input min-h-20"
             value={dueum}
             onChange={(e) => setDueum(e.target.value)}
             placeholder="초성/두문자 암기 (예: 확가신책 → 확장성·가용성·신뢰성·…)"
+          />
+        </div>
+
+        <div>
+          <label className="label">설명 (정답 확인 시 함께 표시)</label>
+          <textarea
+            className="input min-h-28"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            placeholder="핵심 키워드, 암기 포인트 등"
           />
         </div>
 

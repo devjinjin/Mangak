@@ -137,7 +137,7 @@ export default function Review() {
         {!revealed ? (
           <>
             <div className="border border-dashed border-slate-700 rounded-lg py-14 text-center text-sm text-slate-500">
-              설명, 암기설명, 이미지가 숨겨져 있습니다.
+              두음, 설명, 암기설명, 이미지가 숨겨져 있습니다.
               <br />
               머릿속으로 백지복기한 뒤 정답을 확인하세요.
             </div>
@@ -177,19 +177,19 @@ export default function Review() {
                 </p>
               </section>
             )}
-            {current.memorizationDescription && (
-              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
-                <h2 className="text-sm font-bold text-sky-400 mb-2">암기설명</h2>
-                <p className="text-lg font-semibold leading-relaxed text-sky-100 whitespace-pre-wrap">
-                  {current.memorizationDescription}
-                </p>
-              </section>
-            )}
             {current.description && (
               <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
                 <h2 className="text-sm font-bold text-sky-400 mb-2">설명</h2>
                 <p className="text-base text-slate-300 whitespace-pre-wrap">
                   {current.description}
+                </p>
+              </section>
+            )}
+            {current.memorizationDescription && (
+              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
+                <h2 className="text-sm font-bold text-sky-400 mb-2">암기설명</h2>
+                <p className="text-lg font-semibold leading-relaxed text-sky-100 whitespace-pre-wrap">
+                  {current.memorizationDescription}
                 </p>
               </section>
             )}

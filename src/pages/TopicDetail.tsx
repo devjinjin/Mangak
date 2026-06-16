@@ -65,8 +65,15 @@ export default function TopicDetail() {
           <span className={`badge shrink-0 ${badge.cls}`}>{badge.text}</span>
         </div>
 
+        {topic.dueum && (
+          <section className="mt-4 rounded-lg border-2 border-slate-500 p-3">
+            <h2 className="text-xs font-semibold text-slate-500 mb-1">두음</h2>
+            <p className="text-sm text-slate-300 whitespace-pre-wrap">{topic.dueum}</p>
+          </section>
+        )}
+
         {topic.description && (
-          <section className="mt-4">
+          <section className="mt-3 rounded-lg border-2 border-slate-500 p-3">
             <h2 className="text-xs font-semibold text-slate-500 mb-1">설명</h2>
             <p className="text-sm text-slate-300 whitespace-pre-wrap">
               {topic.description}
@@ -74,15 +81,8 @@ export default function TopicDetail() {
           </section>
         )}
 
-        {topic.dueum && (
-          <section className="mt-4">
-            <h2 className="text-xs font-semibold text-slate-500 mb-1">두음</h2>
-            <p className="text-sm text-slate-300 whitespace-pre-wrap">{topic.dueum}</p>
-          </section>
-        )}
-
         {topic.memorizationDescription && (
-          <section className="mt-4">
+          <section className="mt-3 rounded-lg border-2 border-slate-500 p-3">
             <h2 className="text-xs font-semibold text-slate-500 mb-1">암기설명</h2>
             <p className="text-sm text-slate-300 whitespace-pre-wrap">
               {topic.memorizationDescription}
