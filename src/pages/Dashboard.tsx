@@ -1,19 +1,30 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import type { ReviewLog, Topic } from '../types'
-import { listLogs, listTopics } from '../lib/db'
+import type { Category, ReviewLog, Topic } from '../types'
+import { listCategories, listLogs, listTopics } from '../lib/db'
 import { isDue, overdueDays, fmtDate } from '../lib/srs'
 
 export default function Dashboard() {
   const [topics, setTopics] = useState<Topic[]>([])
   const [logs, setLogs] = useState<ReviewLog[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
 
   useEffect(() => {
     listTopics().then(setTopics)
     listLogs().then(setLogs)
+    listCategories().then(setCategories)
   }, [])
 
   const due = topics.filter(isDue)
+
+  // 카테고리별 복습 대상 건수 (0건 카테고리는 숨김)
+  const dueByCategory = categories
+    .map((c) => ({
+      category: c,
+      count: due.filter((t) => t.categoryId === c.id).length
+    }))
+    .filter((x) => x.count > 0)
+  const uncategorizedDue = due.filter((t) => t.categoryId === null).length
   const todayCount = due.filter((t) => overdueDays(t) === 0).length
   const overdueCount = due.filter((t) => overdueDays(t) > 0).length
   const scored = topics.filter((t) => t.review.score !== null)
@@ -36,9 +47,51 @@ export default function Dashboard() {
       </div>
 
       {due.length > 0 ? (
-        <Link to="/review" className="btn-primary w-full py-3 text-base">
-          오늘의 복습 시작 ({due.length}건)
-        </Link>
+        <div className="space-y-3">
+          <Link to="/review" className="btn-primary w-full py-3 text-base">
+            오늘의 복습 시작 ({due.length}건)
+          </Link>
+
+          {(dueByCategory.length > 0 || uncategorizedDue > 0) && (
+            <section className="card">
+              <h2 className="text-sm font-semibold text-slate-300 mb-3">
+                카테고리별 복습
+              </h2>
+              <div className="space-y-2">
+                {dueByCategory.map(({ category, count }) => (
+                  <Link
+                    key={category.id}
+                    to={`/review?category=${category.id}`}
+                    className="btn-secondary w-full justify-between px-4"
+                  >
+                    <span className="flex items-center gap-2 truncate">
+                      <span
+                        className="h-2.5 w-2.5 shrink-0 rounded-full"
+                        style={{ backgroundColor: category.color }}
+                      />
+                      <span className="truncate">{category.name}</span>
+                    </span>
+                    <span className="text-xs text-slate-400 shrink-0">{count}건</span>
+                  </Link>
+                ))}
+                {uncategorizedDue > 0 && (
+                  <Link
+                    to="/review?category=none"
+                    className="btn-secondary w-full justify-between px-4"
+                  >
+                    <span className="flex items-center gap-2 truncate">
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-full bg-slate-600" />
+                      <span className="truncate">미분류</span>
+                    </span>
+                    <span className="text-xs text-slate-400 shrink-0">
+                      {uncategorizedDue}건
+                    </span>
+                  </Link>
+                )}
+              </div>
+            </section>
+          )}
+        </div>
       ) : (
         <div className="card text-center text-sm text-slate-400">
           오늘 복습할 토픽이 없습니다. 잘 하고 있어요!

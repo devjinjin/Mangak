@@ -48,6 +48,7 @@ export default function TopicEdit() {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
   const [memorizationDescription, setMemorizationDescription] = useState('')
+  const [dueum, setDueum] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [tagsText, setTagsText] = useState('')
   const [images, setImages] = useState<string[]>([])
@@ -62,6 +63,7 @@ export default function TopicEdit() {
         setTitle(t.title)
         setDescription(t.description)
         setMemorizationDescription(t.memorizationDescription)
+        setDueum(t.dueum)
         setCategoryId(t.categoryId ?? '')
         setTagsText(t.tags.join(', '))
         setImages(t.images)
@@ -138,6 +140,7 @@ export default function TopicEdit() {
           title: title.trim(),
           description: description.trim(),
           memorizationDescription: memorizationDescription.trim(),
+          dueum: dueum.trim(),
           categoryId: categoryId || null,
           tags,
           images,
@@ -149,6 +152,7 @@ export default function TopicEdit() {
           title: title.trim(),
           description: description.trim(),
           memorizationDescription: memorizationDescription.trim(),
+          dueum: dueum.trim(),
           categoryId: categoryId || null,
           tags,
           images,
@@ -182,6 +186,16 @@ export default function TopicEdit() {
             value={description}
             onChange={(e) => setDescription(e.target.value)}
             placeholder="핵심 키워드, 암기 포인트 등"
+          />
+        </div>
+
+        <div>
+          <label className="label">두음 (정답 확인 시 함께 표시)</label>
+          <textarea
+            className="input min-h-20"
+            value={dueum}
+            onChange={(e) => setDueum(e.target.value)}
+            placeholder="초성/두문자 암기 (예: 확가신책 → 확장성·가용성·신뢰성·…)"
           />
         </div>
 

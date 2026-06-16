@@ -19,6 +19,8 @@ export interface Topic {
   title: string
   description: string
   memorizationDescription: string
+  /** 두음(頭音) — 두문자/초성 암기 보조 */
+  dueum: string
   categoryId: string | null
   tags: string[]
   /** 정리 이미지 목록 (Base64 Data URL, 순서 보존) */

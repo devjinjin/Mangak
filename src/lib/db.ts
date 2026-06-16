@@ -106,7 +106,7 @@ function normalizeReview(r: Partial<ReviewState> | null | undefined): ReviewStat
 /**
  * 토픽을 앱이 가정하는 형태로 정규화한다.
  * - v1 단일 imageData → images[] 마이그레이션
- * - v2 암기설명 필드가 없는 기존 데이터 → 빈 문자열
+ * - 암기설명·두음 등 후속 추가 필드가 없는 기존 데이터 → 빈 문자열
  * - review/images 등 필수 필드 누락·손상 보정 (외부·구버전 Import 방어)
  */
 function normalizeTopic(t: Topic): Topic {
@@ -115,6 +115,7 @@ function normalizeTopic(t: Topic): Topic {
     description: typeof t.description === 'string' ? t.description : '',
     memorizationDescription:
       typeof t.memorizationDescription === 'string' ? t.memorizationDescription : '',
+    dueum: typeof t.dueum === 'string' ? t.dueum : '',
     tags: Array.isArray(t.tags) ? t.tags : [],
     images: Array.isArray(t.images) ? t.images : t.imageData ? [t.imageData] : [],
     review: normalizeReview(t.review)

@@ -74,6 +74,13 @@ export default function TopicDetail() {
           </section>
         )}
 
+        {topic.dueum && (
+          <section className="mt-4">
+            <h2 className="text-xs font-semibold text-slate-500 mb-1">두음</h2>
+            <p className="text-sm text-slate-300 whitespace-pre-wrap">{topic.dueum}</p>
+          </section>
+        )}
+
         {topic.memorizationDescription && (
           <section className="mt-4">
             <h2 className="text-xs font-semibold text-slate-500 mb-1">암기설명</h2>

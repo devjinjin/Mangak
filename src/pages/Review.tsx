@@ -13,10 +13,12 @@ import {
 export default function Review() {
   const [params] = useSearchParams()
   const single = params.get('topic')
+  const category = params.get('category')
 
   const [queue, setQueue] = useState<Topic[]>([])
   const [index, setIndex] = useState(0)
   const [revealed, setRevealed] = useState(false)
+  const [dueumShown, setDueumShown] = useState(false)
   const [done, setDone] = useState(0)
   const [loaded, setLoaded] = useState(false)
 
@@ -28,11 +30,17 @@ export default function Review() {
       })
     } else {
       listTopics().then((ts) => {
-        setQueue(ts.filter(isDue).sort(dueCompare))
+        let due = ts.filter(isDue)
+        if (category) {
+          due = due.filter((t) =>
+            category === 'none' ? t.categoryId === null : t.categoryId === category
+          )
+        }
+        setQueue(due.sort(dueCompare))
         setLoaded(true)
       })
     }
-  }, [single])
+  }, [single, category])
 
   const current = queue[index]
 
@@ -44,6 +52,7 @@ export default function Review() {
       await addLog(log)
       setDone((d) => d + 1)
       setRevealed(false)
+      setDueumShown(false)
       setIndex((i) => i + 1)
     },
     [current]
@@ -132,6 +141,22 @@ export default function Review() {
               <br />
               머릿속으로 백지복기한 뒤 정답을 확인하세요.
             </div>
+            {current.dueum && dueumShown && (
+              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
+                <h2 className="text-sm font-bold text-sky-400 mb-2">두음</h2>
+                <p className="text-lg font-semibold leading-relaxed text-sky-100 whitespace-pre-wrap">
+                  {current.dueum}
+                </p>
+              </section>
+            )}
+            {current.dueum && !dueumShown && (
+              <button
+                className="btn-secondary w-full py-3 text-base"
+                onClick={() => setDueumShown(true)}
+              >
+                두음 보기
+              </button>
+            )}
             <button
               className="btn-primary w-full py-3 text-base"
               onClick={() => setRevealed(true)}
@@ -144,6 +169,14 @@ export default function Review() {
           </>
         ) : (
           <>
+            {current.dueum && (
+              <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
+                <h2 className="text-sm font-bold text-sky-400 mb-2">두음</h2>
+                <p className="text-lg font-semibold leading-relaxed text-sky-100 whitespace-pre-wrap">
+                  {current.dueum}
+                </p>
+              </section>
+            )}
             {current.memorizationDescription && (
               <section className="rounded-lg border border-sky-500/50 bg-sky-950/40 p-4">
                 <h2 className="text-sm font-bold text-sky-400 mb-2">암기설명</h2>
