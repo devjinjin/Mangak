@@ -5,3 +5,12 @@ dev-dist
 *.local
 .DS_Store
 BASE_DATA.json
+# .ai-platform: 런타임 상태만 무시, 지식/설정은 추적
+.ai-platform/queue/
+.ai-platform/reports/
+.ai-platform/audit/
+.ai-platform/checkpoints/
+.ai-platform/context-cache/
+.ai-platform/runs/
+.ai-platform/state/
+.ai-platform/ui-state/
